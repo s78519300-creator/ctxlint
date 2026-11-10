@@ -1,0 +1,41 @@
+name: ctxlint
+description: Lint AI agent context files (AGENTS.md, CLAUDE.md, Cursor rules, Copilot instructions) and annotate findings with code scanning.
+branding:
+  icon: check-square
+  color: blue
+inputs:
+  path:
+    description: Repository folder to lint
+    default: "."
+  fail-on:
+    description: Fail at or above this severity (critical, high, medium, low)
+    default: high
+  upload-sarif:
+    description: Upload results to GitHub code scanning
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - name: Install ctxlint
+      shell: bash
+      run: pip install "${{ github.action_path }}"
+    - name: Lint
+      id: lint
+      shell: bash
+      run: |
+        set +e
+        ctxlint "${{ inputs.path }}" --format sarif -o ctxlint.sarif --fail-on "${{ inputs.fail-on }}"
+        echo "exit=$?" >> "$GITHUB_OUTPUT"
+        ctxlint "${{ inputs.path }}" --fail-on "${{ inputs.fail-on }}" || true
+    - name: Upload SARIF
+      if: inputs.upload-sarif == 'true'
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ctxlint.sarif
+        category: ctxlint
+    - name: Enforce threshold
+      shell: bash
+      run: exit ${{ steps.lint.outputs.exit }}

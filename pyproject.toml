@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ctxlint"
+version = "0.1.0"
+description = "Lint the instruction files AI coding agents read: AGENTS.md, CLAUDE.md, Cursor rules, Copilot instructions and more."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Shalu Kumari"}]
+keywords = ["agents-md", "claude-code", "cursor", "copilot", "ai-agents", "linter", "context-engineering", "prompt-injection", "sarif"]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+ctxlint = "ctxlint.cli:main"
+
+[tool.setuptools]
+packages = ["ctxlint"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
