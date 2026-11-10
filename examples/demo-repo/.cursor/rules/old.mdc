@@ -1,0 +1,4 @@
+---
+alwaysApply: false
+---
+Use the old API client in src/legacy/client.ts.
